@@ -46,9 +46,9 @@ export default async function Home() {
           <div className="flex items-center gap-3">
             {/* <Image src={"/deal-drop-logo.png"} alt="Deal Drop Logo"  */}
             <Image src={"/price-pulse-orange.png"} alt="Deal Drop Logo" 
-              width={600}
-              height={200}
-              className="h-12 w-auto"
+              width={1000}
+              height={333}
+              className="h-16 w-auto sm:h-20"
               // className="h-17 w-auto"
             />
           </div>
