@@ -1,6 +1,6 @@
 import { sendPriceDropAlert } from "@/lib/email";
 import { scrapeProduct } from "@/lib/firecrawl";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -56,7 +56,8 @@ export async function POST(request) {
                 const newPrice = parseFloat(productData.currentPrice);
                 const oldPrice = parseFloat(product.current_price);
 
-                await supabase.from("products").update({
+                await supabase
+                .from("products").update({
                     current_price: newPrice,
                     currency: productData.currenyCode || product.currency,
                     name: productData.productName || product.name,
@@ -115,9 +116,11 @@ export async function POST(request) {
         });
     } catch (error) {
         console.error("Cron job error: ", error);
-        return NextResponse.json({ error: errorm.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-// curl -X POST https://pricepulse.vercel.app/api/cron/check-prices \
-// -H "Authorization: Bearer your_cron_secret"
+// curl -X POST https://pricepulse-steel.vercel.app/api/cron/check-prices -H "Authorization: Bearer your_cron_secret"
+
+// for Microsoft run:
+// curl.exe ....

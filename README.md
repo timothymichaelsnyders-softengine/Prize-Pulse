@@ -999,3 +999,68 @@ const { data, error } = await resend.emails.send({
 ---
 # Deploy PricePulse!!
 ---
+
+- After deployment, go to `Dashboard`
+- Set the domain, if you want to rename the domain
+  > Click `Remove old` to make sure this is the only active link/domain
+
+> Set up in Supabase
+- Go to `Authentication` > `URL Configuration`
+- Change the `Site URL` from http://localhost:3000 to your vercel domain https://pricepulse-steel.vercel.app/
+- `Test` it by `logging in` on the `vercel`
+- Open `Powershell` and paste the CURL command
+  > Make sure to invoke a change by manually changing the initial product price in the Supabase DB
+  > Run the command again
+
+- If it does not work using vercel domain, then use http://localhost:3000 as the domain
+- Run command again
+
+[
+Debug note:
+---
+
+In the `route.js`, the `createClient()` is coming from `@supabase/supabase-js`
+NOT from `@/utils/supabase/server`
+]
+
+- Try with vercel now that this is `fixed`...
+
+
+## Configure the Cron Job
+---
+
+- Head over to `Integrations` on `Supabase`
+- Click on `Cron`
+- `Enable pg_cron`
+
+- Click `Create Job`
+- Name: `trigger_price_check`
+- Enable `use natural language` : take advantage of the AI generation here.
+  > "every day 9 AM"
+  > AI Generated: 0 9 * * *
+
+- Click `install pg_net extension`
+- Select `HTTP request` method
+- Use the endpoint (vercel/localhost)
+  > https://pricepulse-steel.vercel.app/api/cron/check-prices
+  > http://localhost:3000/api/cron/check-prices
+
+- Maybe set `Timeout` (5000)
+- `Add` a new `Header`
+  > HTTP Header = Authorization
+  > Header Value = Bearer [token]
+
+- Add `another` header:
+  > Content-Type
+  > application/json
+
+- Click`Create Cron Job`
+
+
+## Test
+---
+- To test, go through the entire process again (`VERCEL`)
+  > Login
+  > Add a product
+  > Manually change initial price in `supabase`
+  > Run `Cron Job` Manually from `Dashboard`
