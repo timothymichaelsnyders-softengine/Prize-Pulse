@@ -907,4 +907,95 @@ export default PriceChart
 # Continuing...
 ---
 
-- 
+- For the sake of testing, lets manually add price history for the product.
+> The graph is displaying correctly!
+
+
+# Let's `implement` our `alert`
+- Let's create the `endpoint` for it! And then we'll set up the `CRON JOB` for it.
+
+- In the `app` folder, create a new directory called `api`
+- Create a folder called `cron` in this `api` dir.
+- In the `cron` create a folder called `check-prices`
+- In this dir, create a file called `route.js`
+
+- In this file create 2 functions:
+  > export async function GET() {}
+  > export async function POST(request) {}
+
+  - The POST needs a secret, so to create one, in the terminal:
+    > `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+    > This will help us generate a secure string
+    
+  - Add this string as an ENVIRONMENT VARIABLE called `CRON_SECRET`
+
+- The `POST` method, is used to check the prices : `CRON JOB`
+
+- Now write the `logic` for `sending` the `email`.
+  > We will be using a service called `resend`
+  > https://resend.com/
+  
+  > Go to `API Keys`
+  > Create an API Key
+  > Copy API Key
+  > Add to `.env` file as `RESEND_API_KEY`
+  > ADD the email address that we will be receiving from as well as an ENVIRONMENT VAR:
+    - RESEND_FROM_EMAIL=onboarding@resend.dev
+
+
+- >> To send an email, we will need to create a template for how the Email will look and be structured
+
+# Create the Email Template
+---
+
+- In the `lib` folder, create a new file called `email.js`
+- In this file, create a function called `sendPriceDropAlert`
+
+---
+export async function sendPriceDropAlert(userEmail, product, oldPrice, newPrice) {
+    
+}
+---
+
+- Add this function and result logic to the `route.js` file:
+
+if(user?.email) {
+    // Send Email
+    const emailResult = await sendPriceDropAlert(
+        user.email,
+        product,
+        oldPrice,
+        newPrice
+    );
+
+    if( emailResult.success ) {
+        results.alertsSent++;
+    }
+}
+
+- We need to `initialize` the `resend`
+- Install resend
+  > npm i resend
+
+- In the `email.js` file, `initialize Resend`
+- `Calculate` the `percentage drop`
+- Construct the object to send:
+
+const { data, error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL,
+    to: userEmail,
+    subject: `🎉 Price Drop Alert: ${product.name}`,
+    html: ``,
+});
+
+- Check for `errors`
+- `Return success and data`
+
+- For the `html`:
+  > Build the HMTL
+
+- To `test` this we need to `deploy` our application.
+
+---
+# Deploy PricePulse!!
+---
